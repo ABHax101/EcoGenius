@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src='viewer.js'></script>  
+</head>
+<body>
+    <h3>EcoGenius Live Compost Video</h3><br>
+    <video autoplay id='video'></video><br>
+    <button id="my-button">View Stream</button>
+    <br><br><br>
+    <div id="stats">
+        <span id="temp"></span><br>
+        <span id="humidity"></span><br>
+        <span id="dist"></span>
+    </div>
+    <script>
+        const ws = new WebSocket(`wss://${location.hostname}:${location.port}`);
+        ws.onopen = () => {
+            ws.send("HELLO");
+        };
+
+        ws.onmessage = (data) => {
+            console.log(data);
+            sensorData = JSON.parse(data);
+
+            document.querySelector("#temp").innerHTML = `Compost Temperature: ${sensorData.temp_f}°F / ${sensorData.temp_c}°C`;
+            document.querySelector("#humidity").innerHTML = `Humidity: ${sensorData.humidity}%`;
+            document.querySelector("#dist").innerHTML = `Your compost cin is ${(sensorData.distance / 30) * 100}% full.`;
+        }
+    </script>
+</body>
+</html>
